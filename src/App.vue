@@ -1,32 +1,51 @@
 <template>
-  <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view/>
-  </div>
+  <v-app>
+    <side-bar-menu></side-bar-menu>
+    <v-main class="main-v">
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script lang="ts">
+import Vue from "vue";
+import SideBarMenu from "../src/components/side-bar.vue";
+import axios from "axios";
+import { getModule } from "vuex-module-decorators";
+import HeroesStore from "@/store/models/superheroe";
+import { Component } from "vue-property-decorator";
+import { SuperHeroe } from "@/store/models/superhero-interface";
+
+@Component({
+  components: {
+    SideBarMenu,
+  },
+})
+class App extends Vue {
+  heroesStore = getModule(HeroesStore, this.$store);
+
+  created() {
+    axios({
+      method: "GET",
+      url: "https://vought-international-default-rtdb.firebaseio.com/heroes.json",
+      responseType: "stream",
+    }).then((response) => {
+      if (response.status == 200) {
+        const results: SuperHeroe[] = [];
+        for (const id in response.data) {
+          results.push(response.data[id]);
+        }
+        this.heroesStore.setAvailableHeroes(results);
+      }
+    });
+  }
 }
 
-nav {
-  padding: 30px;
-}
+export default App;
+</script>
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
+<style scoped>
+.main-v {
+  background-color: #070e27 !important;
 }
 </style>

@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 Vue.use(VueRouter)
 
@@ -8,7 +7,12 @@ const routes: Array<RouteConfig> = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: () => import('../components/hero-cards.vue')
+  },
+  {
+    path: '/create-super',
+    name: 'createsuper',
+    component: () => import('../components/create-super.vue')
   },
   {
     path: '/about',
